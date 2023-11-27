@@ -13,6 +13,13 @@ self: {
   alwaysNativeBuildInputs = ["extra-cmake-modules"];
   pluckDeps = builtins.map (dep: self.${dep});
 
+  qmllintHook =
+    makeSetupHook {
+      name = "qmllint-validate-hook";
+      substitutions.qmllint = "${qt6.qtdeclarative}/bin/qmllint";
+    }
+    ./qmllint-hook.sh;
+
   moveDevHook = makeSetupHook {name = "kf6-move-dev-hook";} ./move-dev-hook.sh;
 in
   {
@@ -35,7 +42,7 @@ in
 
       outputs = ["out" "dev"];
 
-      nativeBuildInputs = [cmake qt6.wrapQtAppsHook moveDevHook] ++ nativeDeps ++ extraNativeBuildInputs;
+      nativeBuildInputs = [cmake qt6.wrapQtAppsHook qmllintHook moveDevHook] ++ nativeDeps ++ extraNativeBuildInputs;
 
       # FIXME: remove ECM
       buildInputs = [qt6.qtbase] ++ nativeDeps ++ extraBuildInputs;
